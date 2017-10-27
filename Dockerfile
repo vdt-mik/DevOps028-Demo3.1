@@ -20,7 +20,7 @@ RUN { \
 	echo "url: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}"; \
 	echo "username: ${DB_USER}"; \
 	echo "password: ${DB_PASS}"; \
-	echo "referenceUrl=hibernate:spring:academy.softserve.aura.core.entity?dialect=org.hibernate.dialect.PostgreSQL9Dialect'; \
+	echo "referenceUrl=hibernate:spring:academy.softserve.aura.core.entity?dialect=org.hibernate.dialect.PostgreSQL9Dialect"; \
 	} > /opt/app/liquibase/liquibase.properties 
 RUN cd /opt/app/liquibase/ && ./liquibase --classpath=./postgresql-42.1.4.jar --changeLogFile=./changelogs/changelog-main.xml --defaultsFile=./liquibase.properties update
 EXPOSE 9000
