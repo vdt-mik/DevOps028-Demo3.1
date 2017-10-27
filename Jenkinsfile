@@ -9,7 +9,7 @@ node ('Slave'){
   withEnv(javaEnv) {
     stage('Clear & Checkout') {
       cleanWs()
-      git url: 'https://github.com/vdt-mik/DevOps028-Demo3-1'
+      git url: 'https://github.com/vdt-mik/DevOps028-Demo3.1'
     }
     stage('Test & Build') {
       try {
