@@ -9,7 +9,7 @@ node ('Slave'){
   withEnv(javaEnv) {
     stage('Clear & Checkout') {
       cleanWs()
-      git url: 'https://github.com/vdt-mik/DevOps028-Demo3'
+      git url: 'https://github.com/vdt-mik/DevOps028-Demo3-1'
     }
     stage('Test & Build') {
       try {
@@ -22,11 +22,11 @@ node ('Slave'){
     stage ('Post') {
       if (currentBuild.result == null || currentBuild.result == 'SUCCESS') {
         archiveArtifacts artifacts: 'target/*.jar', onlyIfSuccessful: true  
-        sh 'tar -czf liquibase.tar.gz liquibase'
+//        sh 'tar -czf liquibase.tar.gz liquibase'
         sh 'cp target/Samsara-*.jar .'
-        sh 'aws s3 cp target/Samsara-*.jar s3://mik-bucket/'
-        sh 'aws s3 cp liquibase.tar.gz s3://mik-bucket/'
-        sh 'aws s3 cp aws/user-data.sh s3://mik-bucket/'
+//        sh 'aws s3 cp target/Samsara-*.jar s3://mik-bucket/'
+//        sh 'aws s3 cp liquibase.tar.gz s3://mik-bucket/'
+//        sh 'aws s3 cp aws/user-data.sh s3://mik-bucket/'
       }
     }
   }           
@@ -67,10 +67,10 @@ node ('Slave'){
       docker.image("303036157700.dkr.ecr.eu-central-1.amazonaws.com/samsara:samsara-${env.BUILD_ID}").push()
     }
   }
-  stage('Deploy ASG') {
-    sh 'chmod +x aws/asg.sh && ./aws/asg.sh'
-  }  
-  stage('Check APP') {
+//  stage('Deploy ASG') {
+//    sh 'chmod +x aws/asg.sh && ./aws/asg.sh'
+//  }  
+/*  stage('Check APP') {
     timeout(time: 1, unit: 'MINUTES') {
       waitUntil {
         try {
@@ -87,5 +87,5 @@ node ('Slave'){
           }
       }
     }     
-  } 
+  } */
 }
