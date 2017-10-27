@@ -31,7 +31,7 @@ node ('Slave'){
     }
   }           
   stage('Deploy RDS') {
-    sh 'chmod +x aws/rds.sh && ./aws/rds.sh'
+    sh 'chmod +x ./rds.sh && ./rds.sh'
   }
   stage('Build docker image') {
     DB_HOST = sh(
