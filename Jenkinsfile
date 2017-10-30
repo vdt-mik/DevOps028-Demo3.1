@@ -49,7 +49,7 @@ node ('Slave'){
   }
   stage('Deploy db in k8s') {
     sh "kubectl set image deployment/db db=303036157700.dkr.ecr.eu-central-1.amazonaws.com/db:db-${env.BUILD_ID}"
-    timeout(time: 2, unit: 'MINUTES')
+    sh 'sleep 120'
   }           
   stage('Build docker image') {
     DB_HOST = sh(
