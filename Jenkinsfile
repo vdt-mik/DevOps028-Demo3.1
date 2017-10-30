@@ -51,16 +51,16 @@ node ('Slave'){
       script: "ls ${WORKSPACE}/target | grep jar | grep -v original",
       returnStdout: true
       ).trim()
-    def dbImage = docker.build("303036157700.dkr.ecr.eu-central-1.amazonaws.com/db:db-${env.BUILD_ID}","--build-arg DB_HOST=${DB_HOST} --build-arg DB_PORT=${DB_PORT} --build-arg DB_NAME=${DB_NAME}, " +
-                                    "--build-arg DB_USER=${DB_USER} --build-arg DB_PASS=${DB_PASS} --build-arg ART_NAME=${ART_NAME} ./app/db/")
-    def samsaraImage = docker.build("303036157700.dkr.ecr.eu-central-1.amazonaws.com/samsara:samsara-${env.BUILD_ID}","--build-arg DB_HOST=${DB_HOST} --build-arg DB_PORT=${DB_PORT} --build-arg DB_NAME=${DB_NAME}, " +
-                                    "--build-arg DB_USER=${DB_USER} --build-arg DB_PASS=${DB_PASS} --build-arg ART_NAME=${ART_NAME} ./app/app/")
+    def dbImage = docker.build("303036157700.dkr.ecr.eu-central-1.amazonaws.com/db:db-${env.BUILD_ID}","--build-arg DB_NAME=${DB_NAME}, " +
+                                    "--build-arg DB_USER=${DB_USER} --build-arg DB_PASS=${DB_PASS} ./app/db/")
+//    def samsaraImage = docker.build("303036157700.dkr.ecr.eu-central-1.amazonaws.com/samsara:samsara-${env.BUILD_ID}","--build-arg DB_HOST=${DB_HOST} --build-arg DB_PORT=${DB_PORT} --build-arg DB_NAME=${DB_NAME}, " +
+//                                    "--build-arg DB_USER=${DB_USER} --build-arg DB_PASS=${DB_PASS} --build-arg ART_NAME=${ART_NAME} ./app/app/")
   }
 
   stage('Push docker images') {
     docker.withRegistry('https://303036157700.dkr.ecr.eu-central-1.amazonaws.com', 'ecr:eu-central-1:ceb0ba5d-18be-4d4c-8090-1120568d9a14') {
       docker.image("303036157700.dkr.ecr.eu-central-1.amazonaws.com/db:db-${env.BUILD_ID}").push()
-      docker.image("303036157700.dkr.ecr.eu-central-1.amazonaws.com/samsara:samsara-${env.BUILD_ID}").push()
+//      docker.image("303036157700.dkr.ecr.eu-central-1.amazonaws.com/samsara:samsara-${env.BUILD_ID}").push()
 
     }
   }
