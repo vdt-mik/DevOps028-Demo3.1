@@ -17,12 +17,14 @@ metadata:
     service: app
 spec:
   replicas: 2
-  type: LoadBalancer
   selector:
     matchLabels:
       service: app
   strategy:
-    type: Recreate
+    type: RollingUpdate
+    RollingUpdate: 
+      maxUnavailable: 1
+      maxSurge: 1
   template:
     metadata:
       labels:
