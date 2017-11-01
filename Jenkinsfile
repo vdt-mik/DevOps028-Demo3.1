@@ -6,6 +6,26 @@ node ('Slave'){
     "M2_HOME=${mvnHome}",
     "JAVA_HOME=${jdktool}"
   ]
+  K8S_NAME = sh(
+    script: "aws ssm get-parameters --names K8S_NAME --with-decryption --output text | awk '{print \$4}'",
+    returnStdout: true
+    ).trim()
+  K8S_KOPS_STATE_STORE = sh(
+    script: "aws ssm get-parameters --names K8S_KOPS_STATE_STORE --with-decryption --output text | awk '{print \$4}'",
+    returnStdout: true
+    ).trim()
+  DB_NAME = sh(
+    script: "aws ssm get-parameters --names DB_NAME --with-decryption --output text | awk '{print \$4}'",
+    returnStdout: true
+    ).trim()
+  DB_USER = sh(
+    script: "aws ssm get-parameters --names DB_USER --with-decryption --output text | awk '{print \$4}'",
+    returnStdout: true
+    ).trim()
+  DB_PASS = sh(
+    script: "aws ssm get-parameters --names DB_PASS --with-decryption --output text | awk '{print \$4}'",
+    returnStdout: true
+    ).trim()
   withEnv(javaEnv) {
     stage('Clear & Checkout') {
       cleanWs()
@@ -26,19 +46,13 @@ node ('Slave'){
       }
     }
   }
-  stage('Build db docker image') {
-    DB_NAME = sh(
-      script: "aws ssm get-parameters --names DB_NAME --with-decryption --output text | awk '{print \$4}'",
-      returnStdout: true
-      ).trim()
-    DB_USER = sh(
-      script: "aws ssm get-parameters --names DB_USER --with-decryption --output text | awk '{print \$4}'",
-      returnStdout: true
-      ).trim()
-    DB_PASS = sh(
-      script: "aws ssm get-parameters --names DB_PASS --with-decryption --output text | awk '{print \$4}'",
-      returnStdout: true
-      ).trim()
+  stage('Configure k8s cluster'){
+    sh 'kops update cluster ${K8S_NAME} --yes'
+    sh 'kubectl apply -f ./app/db/k8s/deployment.yaml'
+    sh 'kubectl rollout status deployment/db'
+//    sh 'kubectl apply -f ./app/app/k8s/deployment.yaml'
+  }
+  stage('Build db docker image') { 
     def dbImage = docker.build("303036157700.dkr.ecr.eu-central-1.amazonaws.com/db:db-${env.BUILD_ID}","--build-arg DB_NAME=${DB_NAME}, " +
                                     "--build-arg DB_USER=${DB_USER} --build-arg DB_PASS=${DB_PASS} ./app/db/")  
   }
@@ -49,7 +63,7 @@ node ('Slave'){
   }
   stage('Deploy db in k8s') {
     sh "kubectl set image deployment/db db=303036157700.dkr.ecr.eu-central-1.amazonaws.com/db:db-${env.BUILD_ID}"
-    sh 'sleep 120'
+    sh 'kubectl rollout status deployment/db'
   }           
   stage('Build docker image') {
     DB_HOST = sh(
@@ -58,18 +72,6 @@ node ('Slave'){
       ).trim()
     DB_PORT = sh(
       script: "aws ssm get-parameters --names DB_PORT --with-decryption --output text | awk '{print \$4}'",
-      returnStdout: true
-      ).trim()
-    DB_NAME = sh(
-      script: "aws ssm get-parameters --names DB_NAME --with-decryption --output text | awk '{print \$4}'",
-      returnStdout: true
-      ).trim()
-    DB_USER = sh(
-      script: "aws ssm get-parameters --names DB_USER --with-decryption --output text | awk '{print \$4}'",
-      returnStdout: true
-      ).trim()
-    DB_PASS = sh(
-      script: "aws ssm get-parameters --names DB_PASS --with-decryption --output text | awk '{print \$4}'",
       returnStdout: true
       ).trim()
     ART_NAME = sh(
@@ -84,9 +86,15 @@ node ('Slave'){
       docker.image("303036157700.dkr.ecr.eu-central-1.amazonaws.com/samsara:samsara-${env.BUILD_ID}").push()
     }
   }
-  stage('Deploy k8s') {
-    sh 'kubectl run --image=303036157700.dkr.ecr.eu-central-1.amazonaws.com/samsara:samsara-${env.BUILD_ID} app --port=9000 --replicas=1'
-    sh 'kubectl expose deployment app --port=9000 --type=LoadBalancer'
+  stage('Delete docker images'){
+    sh "docker rmi `docker images -q` | true"
+  }
+  stage('Deploy app in k8s') {
+    sh 'kubectl apply -f ./app/app/k8s/deployment.yaml'
+    sh 'kubectl rollout status deployment/app'
+
+//    sh 'kubectl run --image=303036157700.dkr.ecr.eu-central-1.amazonaws.com/samsara:samsara-${env.BUILD_ID} app --port=9000 --replicas=1'
+//    sh 'kubectl expose deployment app --port=9000 --type=LoadBalancer'
 //    sh 'kops replace --name demo3.k8s.local --state=s3://k8s-demo3 -f app/k8s-cluster.yaml'
 //    sh 'kops update cluster --name demo3.k8s.local --state=s3://k8s-demo3 --yes && kops rolling-update cluster'
   }  

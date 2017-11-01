@@ -12,7 +12,7 @@ RUN apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys B97
  echo "deb http://apt.postgresql.org/pub/repos/apt/ precise-pgdg main" > /etc/apt/sources.list.d/pgdg.list;\ 
  apt-get update; apt-get install -y postgresql-9.3 postgresql-client-9.3 postgresql-contrib-9.3; rm -rf /var/lib/apt/lists/*
 USER postgres
-RUN /etc/init.d/postgresql start && psql --command "CREATE USER ${DB_USER} WITH SUPERUSER PASSWORD '{DB_PASS}';" && createdb -O ${DB_USER} ${DB_NAME}
+RUN /etc/init.d/postgresql start && psql --command "CREATE USER ${DB_USER} WITH SUPERUSER PASSWORD '${DB_PASS}';" && createdb -O ${DB_USER} ${DB_NAME}
 RUN echo "host all  all    0.0.0.0/0  md5" >> /etc/postgresql/9.3/main/pg_hba.conf; echo "listen_addresses='*'" >> /etc/postgresql/9.3/main/postgresql.conf
 EXPOSE 5432
 VOLUME  ["/etc/postgresql"]
