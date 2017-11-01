@@ -12,7 +12,7 @@ ENV DB_PORT ${DB_PORT}
 ENV DB_NAME ${DB_NAME}
 ENV DB_USER ${DB_USER}
 ENV DB_PASS ${DB_PASS}
-
+COPY liquibase ./liquibase
 RUN { \
 	echo "driver: org.postgresql.Driver"; \
 	echo "url: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}"; \
