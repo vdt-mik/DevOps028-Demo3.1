@@ -56,16 +56,16 @@ node ('Slave'){
     }
   }
     stage('Configure k8s cluster'){
-    sh "kops update cluster ${NAME} --state=${KOPS_STATE_STORE} --yes"
-   sh 'kubectl apply -f ./app/db/k8s/deployment.yaml'
-   sh 'kubectl rollout status deployment/db && sleep 60'
+//    sh "kops update cluster ${NAME} --state=${KOPS_STATE_STORE} --yes"
+//   sh 'kubectl apply -f ./app/db/k8s/deployment.yaml'
+//   sh 'kubectl rollout status deployment/db && sleep 60'
 //    sh 'kubectl apply -f ./app/app/k8s/deployment.yaml'
   }
-//  stage('Deploy db in k8s') {
-//    sh "kubectl set image deployment/db db=303036157700.dkr.ecr.eu-central-1.amazonaws.com/db:latest"
-//    sh 'kubectl rollout status deployment/db'
-//    sh 'sleep 60'
-//  }           
+  stage('Deploy db in k8s') {
+    sh "kubectl set image deployment/db db=303036157700.dkr.ecr.eu-central-1.amazonaws.com/db:latest"
+    sh 'kubectl rollout status deployment/db'
+    sh 'sleep 60'
+  }           
   stage('Build docker image') {
     DB_HOST = sh(
       script: "kubectl describe services db | grep 'LoadBalancer Ingress:' | cut -d':' -f2 | tr -d ' '",
