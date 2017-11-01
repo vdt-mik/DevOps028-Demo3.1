@@ -47,10 +47,10 @@ node ('Slave'){
     }
   }
   stage('Configure k8s cluster'){
-    sh "echo ${KOPS_STATE_STORE}"
-    sh "kops update cluster ${NAME} --state=${KOPS_STATE_STORE} --yes"
-    sh 'kubectl apply -f ./app/db/k8s/deployment.yaml'
-    sh 'kubectl rollout status deployment/db'
+//    sh "echo ${KOPS_STATE_STORE}"
+//    sh "kops update cluster ${NAME} --state=${KOPS_STATE_STORE} --yes"
+//    sh 'kubectl apply -f ./app/db/k8s/deployment.yaml'
+//    sh 'kubectl rollout status deployment/db'
 //    sh 'kubectl apply -f ./app/app/k8s/deployment.yaml'
   }
   stage('Build db docker image') { 
