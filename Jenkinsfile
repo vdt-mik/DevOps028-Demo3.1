@@ -48,7 +48,7 @@ node ('Slave'){
   }
   stage('Build db docker image') { 
     sh 'login_ecr=`aws ecr get-login --no-include-email --region eu-central-1 | awk \'{print \$6}\'` && docker login -u AWS -p "${login_ecr}" https://303036157700.dkr.ecr.eu-central-1.amazonaws.com/db'
-    def dbImage = docker.build("303036157700.dkr.ecr.eu-central-1.amazonaws.com/db:latest","--build-arg DB_NAME=${DB_NAME} --build-arg DB_USER=${DB_USER} --build-arg DB_PASS=${DB_PASS} ./app/db/")  
+    def dbImage = docker.build("303036157700.dkr.ecr.eu-central-1.amazonaws.com/db:latest","--build-arg DB_NAME=${DB_NAME} --build-arg DB_USER=${DB_USER} --build-arg DB_PASS=${DB_PASS} -f app/db/Dockerfile .")  
   }
   stage('Push db docker image') {
     docker.withRegistry('https://303036157700.dkr.ecr.eu-central-1.amazonaws.com', 'ecr:eu-central-1:ceb0ba5d-18be-4d4c-8090-1120568d9a14') {
@@ -57,7 +57,7 @@ node ('Slave'){
   }
     stage('Configure k8s cluster'){
     sh "kops update cluster ${NAME} --state=${KOPS_STATE_STORE} --yes"
-    sh 'kubectl apply -f ./app/db/k8s/deployment.yaml'
+    sh 'kubectl create -f ./app/db/k8s/deployment.yaml'
     sh 'kubectl rollout status deployment/db && sleep 60'
 //    sh 'kubectl apply -f ./app/app/k8s/deployment.yaml'
   }
