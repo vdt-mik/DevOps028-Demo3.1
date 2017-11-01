@@ -5,7 +5,6 @@ metadata:
     run: db
   name: db
 spec:
-  externalTrafficPolicy: Cluster
   ports:
   - port: 5432
     protocol: TCP
@@ -35,12 +34,8 @@ spec:
         service: db
     spec:
       containers:
-      - image: 303036157700.dkr.ecr.eu-central-1.amazonaws.com/db:db:latest
+      - image: 303036157700.dkr.ecr.eu-central-1.amazonaws.com/db:latest
         name: db
         ports:
           - protocol: TCP
             containerPort: 5432
-      rollingUpdate:
-      maxSurge: 1
-      maxUnavailable: 1
-    restartPolicy: Always
