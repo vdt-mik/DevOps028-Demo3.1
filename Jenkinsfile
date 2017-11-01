@@ -6,11 +6,11 @@ node ('Slave'){
     "M2_HOME=${mvnHome}",
     "JAVA_HOME=${jdktool}"
   ]
-  K8S_NAME = sh(
-    script: "aws ssm get-parameters --names K8S_NAME --with-decryption --output text | awk '{print \$4}'",
+  NAME = sh(
+    script: "aws ssm get-parameters --names K8S-NAME --with-decryption --output text | awk '{print \$4}'",
     returnStdout: true
     ).trim()
-  K8S_KOPS_STATE_STORE = sh(
+  KOPS_STATE_STORE = sh(
     script: "aws ssm get-parameters --names K8S_KOPS_STATE_STORE --with-decryption --output text | awk '{print \$4}'",
     returnStdout: true
     ).trim()
