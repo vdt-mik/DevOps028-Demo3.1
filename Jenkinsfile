@@ -47,7 +47,6 @@ node ('Slave'){
     }
   }
   stage('Configure k8s cluster'){
-//    sh "echo ${KOPS_STATE_STORE}"
 //    sh "kops update cluster ${NAME} --state=${KOPS_STATE_STORE} --yes"
 //    sh 'kubectl apply -f ./app/db/k8s/deployment.yaml'
 //    sh 'kubectl rollout status deployment/db'
@@ -83,7 +82,7 @@ node ('Slave'){
       ).trim()
 //  sh 'login_ecr=`aws ecr get-login --no-include-email --region eu-central-1 | awk \'{print \$6}\'` && docker login -u AWS -p "${login_ecr}" https://303036157700.dkr.ecr.eu-central-1.amazonaws.com/samsara'
     def samsaraImage = docker.build("303036157700.dkr.ecr.eu-central-1.amazonaws.com/samsara:samsara-${env.BUILD_ID}","--build-arg DB_HOST=${DB_HOST} --build-arg DB_PORT=${DB_PORT} --build-arg DB_NAME=${DB_NAME}, " +
-                                    "--build-arg DB_USER=${DB_USER} --build-arg DB_PASS=${DB_PASS} --build-arg ART_NAME=${ART_NAME} ./app/app/")
+                                    "--build-arg DB_USER=${DB_USER} --build-arg DB_PASS=${DB_PASS} --build-arg ART_NAME=${ART_NAME} -f app/app/Dockerfile .")
   }
   stage('Push app docker image') {
     docker.withRegistry('https://303036157700.dkr.ecr.eu-central-1.amazonaws.com', 'ecr:eu-central-1:ceb0ba5d-18be-4d4c-8090-1120568d9a14') {
