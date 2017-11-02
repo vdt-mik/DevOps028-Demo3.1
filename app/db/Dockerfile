@@ -9,26 +9,4 @@ ENV POSTGRES_USER ${DB_USER}
 ENV POSTGRES_PASSWORD ${DB_PASS}
 
 EXPOSE 5432
-USER postgres 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+USER postgres
