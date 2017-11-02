@@ -58,7 +58,7 @@ node ('Slave'){
     stage('Configure k8s cluster'){
     sh "kops update cluster ${NAME} --state=${KOPS_STATE_STORE} --yes"
     sh 'kubectl apply -f ./app/db/k8s/deployment.yaml'
-    sh 'kubectl rollout status deployment/dbdeployment && sleep 30'
+    sh 'kubectl rollout status deployment/dbdeployment && sleep 40'
     }        
   stage('Build docker image') {
     DB_HOST = sh(
