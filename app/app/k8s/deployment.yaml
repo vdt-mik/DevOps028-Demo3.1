@@ -10,6 +10,8 @@ spec:
       port: 9000
       targetPort: 9000
   type: LoadBalancer
+  selector:
+    service: appservice
 ---
 apiVersion: apps/v1beta1
 kind: Deployment
