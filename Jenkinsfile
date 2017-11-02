@@ -88,7 +88,7 @@ node ('Slave'){
     sh 'kubectl rollout status deployment/appdeployment'
   }
   stage('Check APP') {
-    timeout(time: 1, unit: 'MINUTES') {
+    timeout(time: 2, unit: 'MINUTES') {
       waitUntil {
         try {
           APP_URI = sh(
