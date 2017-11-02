@@ -1,38 +1,36 @@
 apiVersion: v1
 kind: Service
 metadata:
-  labels:
-    run: db
-  name: db
+  labels: db-service
+  name: db-service
 spec:
   ports:
   - port: 5432
     protocol: TCP
     targetPort: 5432
-  selector:
-    run: db
   type: LoadBalancer
+  selector:
+    name: app
+    app: app
 ---
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
   labels:
-    run: db
-  name: db
+    service: db-service
+  name: db-deployment
 spec:
-  replicas: 2
   selector:
     matchLabels:
-      service: db
+      service: db-service
+      app: app
   strategy:
-    rollingUpdate:
-      maxSurge: 1
-      maxUnavailable: 1
-    type: RollingUpdate
+    type: Recreate
   template:
     metadata:
       labels:
-        service: db
+        service: db-service
+        app: app
     spec:
       containers:
       - image: 303036157700.dkr.ecr.eu-central-1.amazonaws.com/db:latest

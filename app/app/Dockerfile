@@ -12,6 +12,7 @@ ENV DB_PORT ${DB_PORT}
 ENV DB_NAME ${DB_NAME}
 ENV DB_USER ${DB_USER}
 ENV DB_PASS ${DB_PASS}
+WORKDIR /opt/app
 RUN { \
 	echo "driver: org.postgresql.Driver"; \
 	echo "url: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}"; \
@@ -21,6 +22,5 @@ RUN { \
 	} > /opt/app/liquibase/liquibase.properties 
 RUN cd /opt/app/liquibase/ && ./liquibase --classpath=./postgresql-42.1.4.jar --changeLogFile=./changelogs/changelog-main.xml --defaultsFile=./liquibase.properties update
 EXPOSE 9000
-WORKDIR /opt/app
 COPY ${ART_NAME} .
 CMD java -jar *.jar

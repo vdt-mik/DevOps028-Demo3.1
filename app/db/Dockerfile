@@ -10,3 +10,4 @@ ENV POSTGRES_PASSWORD ${DB_PASS}
 
 EXPOSE 5432
 USER postgres
+VOLUME  ["/var/lib/postgresql"]
