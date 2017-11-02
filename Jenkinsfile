@@ -26,6 +26,9 @@ node ('Slave'){
     script: "aws ssm get-parameters --names DB_PASS --with-decryption --output text | awk '{print \$4}'",
     returnStdout: true
     ).trim()
+  stage('Configure k8s cluster'){
+    sh "kops update cluster ${NAME} --state=${KOPS_STATE_STORE} --yes"
+  }
   withEnv(javaEnv) {
     stage('Clear & Checkout') {
       cleanWs()
@@ -55,9 +58,8 @@ node ('Slave'){
       docker.image("303036157700.dkr.ecr.eu-central-1.amazonaws.com/db:latest").push()
     }
   }
-    stage('Configure k8s cluster'){
-    sh "kops update cluster ${NAME} --state=${KOPS_STATE_STORE} --yes && sleep 60"
-    sh 'kubectl apply -f ./app/db/k8s/deployment.yaml'
+    stage('Deploy db in k8s'){
+    sh 'sleep 20 && kubectl apply -f ./app/db/k8s/deployment.yaml'
     sh 'kubectl rollout status deployment/dbdeployment && sleep 40'
     }        
   stage('Build docker image') {
