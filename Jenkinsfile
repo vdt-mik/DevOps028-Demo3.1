@@ -60,7 +60,7 @@ node ('Slave'){
   }
     stage('Deploy db in k8s'){
     sh 'kubectl apply -f ./app/db/k8s/deployment.yaml'
-    sh 'kubectl rollout status deployment/dbdeployment && sleep 40'
+    sh 'kubectl rollout status deployment/dbdeployment && sleep 60'
     }        
   stage('Build app docker image') {
     DB_HOST = sh(
@@ -91,12 +91,12 @@ node ('Slave'){
   }
   stage('Check APP') {
     timeout(time: 2, unit: 'MINUTES') {
+      APP_URI = sh(
+        script: "kubectl describe services appservice | grep 'LoadBalancer Ingress:' | cut -d':' -f2 | tr -d ' '",
+        returnStdout: true
+        ).trim()
       waitUntil {
-        try {
-          APP_URI = sh(
-          script: "kubectl describe services appservice | grep 'LoadBalancer Ingress:' | cut -d':' -f2 | tr -d ' '",
-          returnStdout: true
-          ).trim()
+        try { 
           def response = httpRequest "http://$APP_URI:9000/login" 
           println("Status: "+response.status) 
           println("Content: "+response.content)
