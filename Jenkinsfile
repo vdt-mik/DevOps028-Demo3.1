@@ -60,7 +60,7 @@ node ('Slave'){
   }
     stage('Deploy db in k8s'){
     sh 'kubectl apply -f ./app/db/k8s/deployment.yaml'
-    sh 'kubectl rollout status deployment/dbdeployment && sleep 60'
+    sh 'kubectl rollout status deployment/dbdeployment && sleep 100'
     }        
   stage('Build app docker image') {
     DB_HOST = sh(
