@@ -58,7 +58,7 @@ node ('Slave'){
     stage('Configure k8s cluster'){
     sh "kops update cluster ${NAME} --state=${KOPS_STATE_STORE} --yes"
     sh 'kubectl apply -f ./app/db/k8s/deployment.yaml'
-    sh 'kubectl rollout status deployment/db && sleep 60'
+    sh 'kubectl rollout status deployment/dbdeployment && sleep 60'
     }
 /*  stage('Deploy db in k8s') {
     sh "kubectl set image deployment/db db=303036157700.dkr.ecr.eu-central-1.amazonaws.com/db:latest"
@@ -90,7 +90,7 @@ node ('Slave'){
   }
   stage('Deploy app in k8s') {
     sh 'kubectl apply -f ./app/app/k8s/deployment.yaml'
-    sh 'kubectl rollout status deployment/app'
+    sh 'kubectl rollout status deployment/appdeployment'
 //    sh 'kubectl run --image=303036157700.dkr.ecr.eu-central-1.amazonaws.com/samsara:samsara-${env.BUILD_ID} app --port=9000 --replicas=1'
 //    sh 'kubectl expose deployment app --port=9000 --type=LoadBalancer'
 //    sh 'kops replace --name demo3.k8s.local --state=s3://k8s-demo3 -f app/k8s-cluster.yaml'
