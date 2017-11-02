@@ -1,39 +1,37 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: app-service
+  name: appservice
   labels:
-    app: app
+    service: appservice
 spec:
   ports:
     - protocol: TCP
       port: 9000
       targetPort: 9000
   type: LoadBalancer
-
+---
 apiVersion: apps/v1beta1
 kind: Deployment
 metadata:
-  name: app-deployment
+  name: appdeployment
   labels:
-    service: app-service
+    service: appservice
 spec:
   replicas: 2
   selector:
     matchLabels:
-      service: app-service
-      app: app
+      service: appservice
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
-        service: app-service
-        app: app
+        service: appservice
     spec:
       containers:
       - image: https://303036157700.dkr.ecr.eu-central-1.amazonaws.com/samsara:latest
-        name: app
+        name: samsara
         ports:
           - protocol: TCP
             containerPort: 9000
