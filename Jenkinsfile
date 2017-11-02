@@ -58,16 +58,11 @@ node ('Slave'){
     stage('Configure k8s cluster'){
     sh "kops update cluster ${NAME} --state=${KOPS_STATE_STORE} --yes"
     sh 'kubectl apply -f ./app/db/k8s/deployment.yaml'
-    sh 'kubectl rollout status deployment/dbdeployment && sleep 60'
-    }
-/*  stage('Deploy db in k8s') {
-    sh "kubectl set image deployment/db db=303036157700.dkr.ecr.eu-central-1.amazonaws.com/db:latest"
-    sh 'kubectl rollout status deployment/db'
-    sh 'sleep 60'
-  } */          
+    sh 'kubectl rollout status deployment/dbdeployment && sleep 30'
+    }        
   stage('Build docker image') {
     DB_HOST = sh(
-      script: "kubectl describe services db | grep 'LoadBalancer Ingress:' | cut -d':' -f2 | tr -d ' '",
+      script: "kubectl describe services dbservice | grep 'LoadBalancer Ingress:' | cut -d':' -f2 | tr -d ' '",
       returnStdout: true
       ).trim()
     DB_PORT = sh(
@@ -91,20 +86,16 @@ node ('Slave'){
   stage('Deploy app in k8s') {
     sh 'kubectl apply -f ./app/app/k8s/deployment.yaml'
     sh 'kubectl rollout status deployment/appdeployment'
-//    sh 'kubectl run --image=303036157700.dkr.ecr.eu-central-1.amazonaws.com/samsara:samsara-${env.BUILD_ID} app --port=9000 --replicas=1'
-//    sh 'kubectl expose deployment app --port=9000 --type=LoadBalancer'
-//    sh 'kops replace --name demo3.k8s.local --state=s3://k8s-demo3 -f app/k8s-cluster.yaml'
-//    sh 'kops update cluster --name demo3.k8s.local --state=s3://k8s-demo3 --yes && kops rolling-update cluster'
   }
-/*  stage('Check APP') {
+  stage('Check APP') {
     timeout(time: 1, unit: 'MINUTES') {
       waitUntil {
         try {
           APP_URI = sh(
-          script: "aws ssm get-parameters --names APP_URL --with-decryption --output text | awk '{print \$4}'",
+          script: "kubectl describe services appservice | grep 'LoadBalancer Ingress:' | cut -d':' -f2 | tr -d ' '",
           returnStdout: true
           ).trim()
-          def response = httpRequest "http://$APP_URI/login" 
+          def response = httpRequest "http://$APP_URI:9000/login" 
           println("Status: "+response.status) 
           println("Content: "+response.content)
           return true
@@ -113,5 +104,5 @@ node ('Slave'){
           }
       }
     }     
-  } */
+  } 
 }
