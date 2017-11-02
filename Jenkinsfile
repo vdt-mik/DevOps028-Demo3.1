@@ -59,7 +59,7 @@ node ('Slave'){
     }
   }
     stage('Deploy db in k8s'){
-    sh 'sleep 240 && kubectl apply -f ./app/db/k8s/deployment.yaml'
+    sh 'kubectl apply -f ./app/db/k8s/deployment.yaml'
     sh 'kubectl rollout status deployment/dbdeployment && sleep 40'
     }        
   stage('Build docker image') {
