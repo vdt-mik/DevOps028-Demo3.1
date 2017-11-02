@@ -6,9 +6,9 @@ metadata:
     service: dbservice
 spec:
   ports:
-  - port: 5432
-    protocol: TCP
-    targetPort: 5432
+    - port: 5432
+      protocol: TCP
+      targetPort: 5432
   type: LoadBalancer
   selector:
     service: dbservice
