@@ -62,7 +62,7 @@ node ('Slave'){
     sh 'kubectl apply -f ./app/db/k8s/deployment.yaml'
     sh 'kubectl rollout status deployment/dbdeployment && sleep 40'
     }        
-  stage('Build docker image') {
+  stage('Build app docker image') {
     DB_HOST = sh(
       script: "kubectl describe services dbservice | grep 'LoadBalancer Ingress:' | cut -d':' -f2 | tr -d ' '",
       returnStdout: true
