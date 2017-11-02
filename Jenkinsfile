@@ -56,7 +56,7 @@ node ('Slave'){
     }
   }
     stage('Configure k8s cluster'){
-    sh "kops update cluster ${NAME} --state=${KOPS_STATE_STORE} --yes"
+    sh "kops update cluster ${NAME} --state=${KOPS_STATE_STORE} --yes && sleep 60"
     sh 'kubectl apply -f ./app/db/k8s/deployment.yaml'
     sh 'kubectl rollout status deployment/dbdeployment && sleep 40'
     }        
